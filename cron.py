@@ -1,11 +1,21 @@
-import requests
 import time
 import sqlite3
+import argparse
+import requests
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--links", help="show links from database",
+                    action="store_true")
+args = parser.parse_args()
 
 conn = sqlite3.connect('sites.db')
 c = conn.cursor()
 
-url = 'http://www.pocasi.8u.cz/gp.php'
+if args.links:
+	for row in c.execute('SELECT * FROM sites'):
+		print(row[0],"\t",row[1],"\t",row[2])
+	conn.close()
+	exit()
 
 while 1:
 	for row in c.execute('SELECT * FROM sites'):
