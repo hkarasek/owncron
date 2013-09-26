@@ -1,7 +1,7 @@
 import time, sqlite3, argparse, requests
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--links", help="show links from database", action="store_true")
+parser.add_argument("--list", help="show links from database", action="store_true")
 parser.add_argument("--add", help="add link to db", action="store_true")
 parser.add_argument("--remove", help="remove link from db", action="store_true")
 
@@ -32,7 +32,7 @@ if args.add:
 	conn.close()
 	exit()
 
-if args.links:
+if args.list:
 	for row in c.execute('SELECT * FROM sites'):
 		print(row[0],"\t",row[1],"\t",row[2])
 	conn.close()
