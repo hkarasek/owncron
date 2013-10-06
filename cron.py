@@ -38,17 +38,46 @@ if args.list:
 	conn.close()
 	exit()
 
+
+
+def send_mail(url,mtype):
+	message = ['DOWN','UP']
+	return requests.post(
+        "https://api.mailgun.net/v2/hkar.mailgun.org/messages",
+        auth=("api", "key-5nfl-1iurn9qvd-r9veh4p4r231w9by7"),
+        data={"from": "OwnCron <cron@hkar.mailgun.org>",
+              "to": ["admin@hkar.eu"],
+              "subject": "Cron " +message[mtype],
+              "text": 'The '+url+' is '+message[mtype]})
+
+########################
+# define some variables#
+########################
+cron_error = {} # dictionary of the error links
+#####
+
 while 1:
 	for row in c.execute('SELECT * FROM sites'):
 		if int((time.time() - int(row[2]))) > int(row[1]):
 			try:
-				r = requests.get(row[0])
+				r = requests.get(row[0], timeout=15)
 				print(row[0], row[1], row[2], "\t -- ok")
 				c.execute("UPDATE sites SET last=? WHERE url=?", (time.time(), row[0]))        
 				conn.commit()
+				try:
+					del cron_error[row[0]]
+					send_mail(row[0], 1)
+				except:
+					pass
 				del r
 			except:
 				print(row[0], row[1], row[2], "\t -- no")
+				try:
+					cron_error[row[0]] += 1
+					print('times \t' + str(cron_error[row[0]]))
+				except:
+					cron_error[row[0]] = 1
+					print('times \t' + str(cron_error[row[0]]))
+					print(send_mail(row[0], 0))
 	time.sleep(10)
-
 conn.close()
