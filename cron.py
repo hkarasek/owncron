@@ -64,12 +64,12 @@ def send_sms(url, mtype):
 ########################
 cron_error = {}  # dictionary of the error links
 
-sms_number = ''    # mobile number for sms sending...
-nexmo_api_key = ''        # nexmo.com api_key
-nexmo_secret_key = ''    # nexmo.com api_secret
-mailgun_api_key = ''    # mailgun_api_key
-mailgun_from = ''        # mailgun "from" email
-mailgun_to = ''                # mailgun "to" email
+sms_number = '00420775238899'    # mobile number for sms sending...
+nexmo_api_key = '7af40cc5'        # nexmo.com api_key
+nexmo_secret_key = '50b6de8a'    # nexmo.com api_secret
+mailgun_api_key = 'key-5nfl-1iurn9qvd-r9veh4p4r231w9by7'    # mailgun_api_key
+mailgun_from = 'cron@hkar.mailgun.org'        # mailgun "from" email
+mailgun_to = 'admin@hkar.eu'                # mailgun "to" email
 #####
 
 while 1:
