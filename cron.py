@@ -1,14 +1,32 @@
 import time, sqlite3, argparse, requests
 
+########################
+# define some variables#
+########################
+cron_error = {}  # dictionary of the error links
+
+sms_number = '00420775238899'    # mobile number for sms sending...
+nexmo_api_key = '7af40cc5'       # nexmo.com api_key
+nexmo_secret_key = '50b6de8a'    # nexmo.com api_secret
+mailgun_api_key = 'key-5nfl-1iurn9qvd-r9veh4p4r231w9by7'    # mailgun_api_key
+mailgun_from = 'cron@hkar.mailgun.org'        				# mailgun "from" email
+mailgun_to = 'admin@hkar.eu'                				# mailgun "to" email
+#####
+
+## try connect to SQLite database or exit
+try:
+	conn = sqlite3.connect('sites.db')
+	c = conn.cursor()
+except:
+	print("Can't connect to database... plese use 'python3 cron.py --setupsql'")
+	exit()
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--list", help="show links from database", action="store_true")
 parser.add_argument("--add", help="add link to db", action="store_true")
 parser.add_argument("--remove", help="remove link from db", action="store_true")
 
 args = parser.parse_args()
-
-conn = sqlite3.connect('sites.db')
-c = conn.cursor()
 
 if args.remove:
 	print('remove link from db: \n ###############################')
@@ -50,7 +68,6 @@ def send_mail(url, mtype):
 			  "subject": "Cron " + message[mtype],
 			  "text": 'The ' + url + ' is ' + message[mtype]})
 
-
 def send_sms(url, mtype):
 	global nexmo_api_key, nexmo_secret_key, sms_number
 	message = ['DOWN', 'UP']
@@ -59,19 +76,7 @@ def send_sms(url, mtype):
 			   'text': message_text}
 	return requests.post('https://rest.nexmo.com/sms/json', data=request)
 
-########################
-# define some variables#
-########################
-cron_error = {}  # dictionary of the error links
-
-sms_number = '00420775238899'    # mobile number for sms sending...
-nexmo_api_key = '7af40cc5'        # nexmo.com api_key
-nexmo_secret_key = '50b6de8a'    # nexmo.com api_secret
-mailgun_api_key = 'key-5nfl-1iurn9qvd-r9veh4p4r231w9by7'    # mailgun_api_key
-mailgun_from = 'cron@hkar.mailgun.org'        # mailgun "from" email
-mailgun_to = 'admin@hkar.eu'                # mailgun "to" email
-#####
-
+## main program
 while 1:
 	for row in c.execute('SELECT * FROM sites'):
 		if int((time.time() - int(row[2]))) > int(row[1]):
